@@ -8,7 +8,7 @@
 
 import { createContext, useContext, useEffect, useState, type ReactNode } from 'react';
 import { type User, type Session } from '@supabase/supabase-js';
-import { supabase } from '@/lib/supabase/client';
+import { supabase, getSignedAvatarUrl } from '@/lib/supabase/client';
 import type { User as DBUser } from '@/lib/supabase/types';
 
 interface SupabaseContextType {
@@ -75,10 +75,21 @@ export function SupabaseProvider({ children }: { children: ReactNode }) {
         setUserProfile(null);
         setIsAdmin(false);
       } else {
-  setUserProfile(data as DBUser);
-        // Verificar si es admin
-        const superAdminEmail = process.env.NEXT_PUBLIC_SUPER_ADMIN_EMAIL;
   const row = data as DBUser;
+  // Si el avatar está en storage (photo_path), generar signed URL y asignarlo a photo_url
+  if (row.photo_path) {
+    try {
+      const signed = await getSignedAvatarUrl(row.photo_path, 3600);
+      if (signed) {
+        row.photo_url = signed;
+      }
+    } catch (e) {
+      console.warn('No se pudo generar signed URL para avatar:', e);
+    }
+  }
+  setUserProfile(row as DBUser);
+    // Verificar si es admin
+    const superAdminEmail = process.env.NEXT_PUBLIC_SUPER_ADMIN_EMAIL;
   // Determinar admin a partir del role/email local como fallback
   let adminFlag = row.role === 'admin' || row.email === superAdminEmail;
 
