@@ -1,0 +1,345 @@
+{
+  "entities": {
+    "User": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "User",
+      "type": "object",
+      "description": "Represents a user of the FinanTrack application.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the User entity."
+        },
+        "name": {
+          "type": "string",
+          "description": "The user's full name."
+        },
+        "email": {
+          "type": "string",
+          "description": "The user's email address.",
+          "format": "email"
+        },
+        "photoURL": {
+          "type": "string",
+          "description": "URL of the user's profile picture."
+        },
+        "createdAt": {
+          "type": "string",
+          "description": "Timestamp indicating when the user account was created.",
+          "format": "date-time"
+        },
+        "accountType": {
+          "type": "string",
+          "description": "The user's account type.",
+          "enum": [
+            "Free",
+            "Premium",
+            "Student"
+          ]
+        },
+        "role": {
+          "type": "string",
+          "description": "The user's role.",
+          "enum": [
+            "admin",
+            "user"
+          ]
+        }
+      },
+      "required": [
+        "id",
+        "name",
+        "email",
+        "createdAt",
+        "accountType",
+        "role"
+      ]
+    },
+    "Transaction": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "Transaction",
+      "type": "object",
+      "description": "Represents a financial transaction (income or expense) recorded by a user.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the Transaction entity."
+        },
+        "userId": {
+          "type": "string",
+          "description": "Reference to User. (Relationship: User 1:N Transaction)"
+        },
+        "type": {
+          "type": "string",
+          "description": "The type of transaction (e.g., 'income' or 'expense')."
+        },
+        "category": {
+          "type": "string",
+          "description": "The category of the transaction (e.g., 'food', 'transportation')."
+        },
+        "amount": {
+          "type": "number",
+          "description": "The amount of the transaction."
+        },
+        "description": {
+          "type": "string",
+          "description": "A description of the transaction."
+        },
+        "date": {
+          "type": "string",
+          "description": "The date of the transaction.",
+          "format": "date-time"
+        }
+      },
+      "required": [
+        "id",
+        "userId",
+        "type",
+        "category",
+        "amount",
+        "date"
+      ]
+    },
+    "Budget": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "Budget",
+      "type": "object",
+      "description": "Represents a user's monthly budget.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the Budget entity."
+        },
+        "userId": {
+          "type": "string",
+          "description": "Reference to User. (Relationship: User 1:N Budget)"
+        },
+        "month": {
+          "type": "string",
+          "description": "The month for which the budget is set (e.g., '2024-01')."
+        },
+        "total": {
+          "type": "number",
+          "description": "The total budget amount for the month."
+        },
+        "categories": {
+          "type": "array",
+          "description": "An array of categories and their allocated budget amounts.",
+          "items": {
+            "type": "string"
+          }
+        }
+      },
+      "required": [
+        "id",
+        "userId",
+        "month",
+        "total",
+        "categories"
+      ]
+    },
+    "Goal": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "Goal",
+      "type": "object",
+      "description": "Represents a user's financial goal.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the Goal entity."
+        },
+        "userId": {
+          "type": "string",
+          "description": "Reference to User. (Relationship: User 1:N Goal)"
+        },
+        "title": {
+          "type": "string",
+          "description": "The title of the financial goal."
+        },
+        "targetAmount": {
+          "type": "number",
+          "description": "The target amount to be saved for the goal."
+        },
+        "currentAmount": {
+          "type": "number",
+          "description": "The current amount saved towards the goal."
+        },
+        "deadline": {
+          "type": "string",
+          "description": "The deadline for achieving the goal.",
+          "format": "date-time"
+        }
+      },
+      "required": [
+        "id",
+        "userId",
+        "title",
+        "targetAmount",
+        "currentAmount",
+        "deadline"
+      ]
+    },
+    "GoalContribution": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "Goal Contribution",
+      "type": "object",
+      "description": "Represents a single contribution made towards a financial goal.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the GoalContribution entity."
+        },
+        "userId": {
+          "type": "string",
+          "description": "Reference to User. (Relationship: User 1:N GoalContribution)"
+        },
+        "goalId": {
+          "type": "string",
+          "description": "Reference to Goal. (Relationship: Goal 1:N GoalContribution)"
+        },
+        "amount": {
+          "type": "number",
+          "description": "The amount contributed."
+        },
+        "date": {
+          "type": "string",
+          "description": "The date of the contribution.",
+          "format": "date-time"
+        },
+        "sourceDescription": {
+          "type": "string",
+          "description": "A description of the source of the contribution (e.g., from a specific income)."
+        }
+      },
+      "required": [
+        "id",
+        "userId",
+        "goalId",
+        "amount",
+        "date",
+        "sourceDescription"
+      ]
+    }
+  },
+  "auth": {
+    "providers": [
+      "password",
+      "anonymous",
+      "google.com"
+    ],
+    "customClaims": {
+      "role": {
+        "type": "string",
+        "enum": [
+          "admin",
+          "user"
+        ]
+      }
+    }
+  },
+  "firestore": {
+    "structure": [
+      {
+        "path": "/users/{userId}",
+        "definition": {
+          "entityName": "User",
+          "schema": {
+            "$ref": "#/backend/entities/User"
+          },
+          "description": "Stores user profile information. Authorization is based on matching the document ID to the authenticated user's UID.",
+          "params": [
+            {
+              "name": "userId",
+              "description": "The unique identifier for the user, matching the Firebase Auth UID."
+            }
+          ]
+        }
+      },
+      {
+        "path": "/users/{userId}/transactions/{transactionId}",
+        "definition": {
+          "entityName": "Transaction",
+          "schema": {
+            "$ref": "#/backend/entities/Transaction"
+          },
+          "description": "Stores financial transaction data for a specific user. Includes denormalized 'userId' for authorization independence.",
+          "params": [
+            {
+              "name": "userId",
+              "description": "The unique identifier for the user who owns the transaction."
+            },
+            {
+              "name": "transactionId",
+              "description": "The unique identifier for the transaction."
+            }
+          ]
+        }
+      },
+      {
+        "path": "/users/{userId}/budgets/{budgetId}",
+        "definition": {
+          "entityName": "Budget",
+          "schema": {
+            "$ref": "#/backend/entities/Budget"
+          },
+          "description": "Stores budget data for a specific user. Includes denormalized 'userId' for authorization independence.",
+          "params": [
+            {
+              "name": "userId",
+              "description": "The unique identifier for the user who owns the budget."
+            },
+            {
+              "name": "budgetId",
+              "description": "The unique identifier for the budget."
+            }
+          ]
+        }
+      },
+      {
+        "path": "/users/{userId}/goals/{goalId}",
+        "definition": {
+          "entityName": "Goal",
+          "schema": {
+            "$ref": "#/backend/entities/Goal"
+          },
+          "description": "Stores financial goal data for a specific user. Includes denormalized 'userId' for authorization independence.",
+          "params": [
+            {
+              "name": "userId",
+              "description": "The unique identifier for the user who owns the goal."
+            },
+            {
+              "name": "goalId",
+              "description": "The unique identifier for the goal."
+            }
+          ]
+        }
+      },
+      {
+        "path": "/users/{userId}/goals/{goalId}/contributions/{contributionId}",
+        "definition": {
+          "entityName": "GoalContribution",
+          "schema": {
+            "$ref": "#/backend/entities/GoalContribution"
+          },
+          "description": "Stores contribution records for a specific goal. Authorization is based on ownership of the parent goal.",
+          "params": [
+            {
+              "name": "userId",
+              "description": "The unique identifier for the user who owns the goal."
+            },
+            {
+              "name": "goalId",
+              "description": "The unique identifier for the goal."
+            },
+            {
+              "name": "contributionId",
+              "description": "The unique identifier for the contribution."
+            }
+          ]
+        }
+      }
+    ],
+    "reasoning": "The Firestore structure is designed to ensure Authorization Independence and support secure list operations (QAPs). User data, transactions, budgets and goals are stored in hierarchical paths under each user's document to enforce ownership. This structure removes the need for complex `get()` calls in security rules, simplifying rule creation and maintenance.\n\n*   `/users/{userId}`: Contains user profile data. Authorization is based on `request.auth.uid == userId`.\n*   `/users/{userId}/transactions/{transactionId}`: Stores individual transactions. The `userId` is denormalized, ensuring that each transaction's access control is independent of its parent user document. Authorization is based on `request.auth.uid == resource.data.userId`.\n*   `/users/{userId}/budgets/{budgetId}`: Stores user-specific budgets. Similar to transactions, the `userId` is denormalized within each budget document for Authorization Independence. Authorization is based on `request.auth.uid == resource.data.userId`.\n*   `/users/{userId}/goals/{goalId}`: Stores user-defined goals. The `userId` is denormalized, making authorization independent. Authorization is based on `request.auth.uid == resource.data.userId`.\n*   `/users/{userId}/goals/{goalId}/contributions/{contributionId}`: Stores contributions to a goal. This sub-collection approach ensures that contributions are tightly coupled with their respective goals, simplifying queries and security rules. Authorization is inherited from the parent goal.\n\nThis structure supports QAPs by ensuring that listing operations on subcollections (transactions, budgets, goals) can be securely filtered based on the `userId` without requiring complex rule logic or `get()` calls. Segregation of data based on ownership simplifies security rules and prevents unauthorized access."
+  }
+}

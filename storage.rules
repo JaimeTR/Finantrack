@@ -1,0 +1,54 @@
+/**
+ * @file Firebase Storage Security Rules for FinanTrack Application
+ * @version Prototyping
+ *
+ * @description This ruleset controls access to files in Firebase Storage. 
+ * Users can upload and manage their own profile images.
+ *
+ * @dataStructure
+ * - `/users/{userId}/profile/{fileName}`: User profile images
+ *
+ * @keySecurityDecisions
+ * - Users can only upload to their own folder
+ * - Maximum file size: 5MB
+ * - Only image files allowed
+ */
+rules_version = '2';
+
+service firebase.storage {
+  match /b/{bucket}/o {
+    
+    /**
+     * @description Controls access to user profile images.
+     * @path /users/{userId}/profile/{fileName}
+     * @allow (read) Anyone can read (for displaying avatars)
+     * @allow (write) Only the owner can upload/update/delete their images
+     * @constraint Max file size: 5MB
+     * @constraint Only image content types allowed
+     */
+    match /users/{userId}/profile/{fileName} {
+      // Helper functions
+      function isSignedIn() {
+        return request.auth != null;
+      }
+      
+      function isOwner(userId) {
+        return isSignedIn() && request.auth.uid == userId;
+      }
+      
+      function isValidImage() {
+        return request.resource.contentType.matches('image/.*');
+      }
+      
+      function isValidSize() {
+        return request.resource.size < 5 * 1024 * 1024; // 5MB
+      }
+      
+      // Allow anyone to read (for displaying profile pictures)
+      allow read: if true;
+      
+      // Only owner can write (upload/update/delete) their own images
+      allow write: if isOwner(userId) && isValidImage() && isValidSize();
+    }
+  }
+}
